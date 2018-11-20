@@ -1,5 +1,4 @@
-// note: if toUpperCase is used, these also can be used to translate wide moves.
-export {
+export default {
 	"x" :{
 		"U": "B",
 		"F": "U",
@@ -31,7 +30,7 @@ export {
 		"E2":"E2",
 		"S": "S'",
 		"S'": "S",
-		"S2": "S2"
+		"S2": "S2",
 		"X": "x",
 		"Y": "y'",
 		"Y'": "y",
@@ -108,7 +107,7 @@ export {
 		"S": "M'",
 		"S'": "M",
 		"S2": "M2",
-		"X":, "z'",
+		"X": "z'",
 		"X'": "z",
 		"x2": "z2",
 		"Y": "y",

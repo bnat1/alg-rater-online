@@ -1,5 +1,5 @@
-export {
-	R: {
+export default {
+	"R": {
 		equivalentMove: "l",
 		rotation: "x"
 	},
@@ -23,7 +23,7 @@ export {
 		equivalentMove: "d2",
 		rotation: "y2"
 	},
-	L: {
+	"L": {
 		equivalentMove: "r",
 		rotation: "x'"
 	},
@@ -35,7 +35,7 @@ export {
 		equivalentMove: "r2",
 		rotation: "x2"
 	},
-	D: {
+	"D": {
 		equivalentMove: "u",
 		rotation: "y'"
 	},
@@ -47,7 +47,7 @@ export {
 		equivalentMove: "u2",
 		rotation: "y2"
 	},
-	F: {
+	"F": {
 		equivalentMove: "b",
 		rotation: "z"
 	},
@@ -59,7 +59,7 @@ export {
 		equivalentMove: "b2",
 		rotation: "z2"
 	},
-	B: {
+	"B": {
 		equivalentMove: "f",
 		rotation: "z'"
 	},
@@ -71,74 +71,74 @@ export {
 		equivalentMove: "f2",
 		rotation: "z2"
 	},
-	r: {
+	"r": {
 		equivalentMove: "L",
 		rotation: "x"
-	}
+	},
 	"r'": {
 		equivalentMove: "L'",
 		rotation: "x'"
-	}
+	},
 	"r2": {
 		equivalentMove: "L2",
 		rotation: "x2"
-	}
-	u: {
+	},
+	"u": {
 		equivalentMove: "D",
 		rotation: "y"
-	}
+	},
 	"u'": {
 		equivalentMove: "D'",
 		rotation: "y'"
-	}
+	},
 	"u2": {
 		equivalentMove: "D2",
 		rotation: "y2"
-	}
-	l: {
+	},
+	"l": {
 		equivalentMove: "R ",
 		rotation: "x'"
-	}
+	},
 	"l'": {
 		equivalentMove: "R'",
 		rotation: "x"
-	}
+	},
 	"l2": {
 		equivalentMove: "R2",
 		rotation: "x2"
-	}
-	d: {
+	},
+	"d": {
 		equivalentMove: "U ",
 		rotation: "y'"
-	}
+	},
 	"d'": {
 		equivalentMove: "U'",
 		rotation: "y"
-	}
+	},
 	"d2": {
 		equivalentMove: "U2",
 		rotation: "y2"
-	}
-	f: {
+	},
+	"f": {
 		equivalentMove: "B ",
 		rotation: "z"
-	}
+	},
 	"f'": {
 		equivalentMove: "B'",
 		rotation: "z'"
-	}
+	},
 	"f2": {
 		equivalentMove: "B2",
 		rotation: "z2"
-	}
-	b: {
+	},
+	"b": {
 		equivalentMove: "F",
 		rotation: "z'"
-	}
+	},
 	"b'": {
 		equivalentMove: "F'",
 		rotation: "z"
-	}
+	},
 	"b2": {
 		equivalentMove: "F2",
 		rotation: "z2"
