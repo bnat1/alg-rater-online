@@ -14,8 +14,11 @@ export default class Alg {
 		this.originalInput = algStr
 		this.movesStr = normalize(algStr)
 		this.movesArr = this.strToArr(this.movesStr)
-		this.htmLength = this.calcHtmLength(this.movesArr)
-		this.qtmLength = this.calcQtmLength(this.movesArr)
+		this.htm = this.calcHtm(this.movesArr)
+		this.qtm = this.calcQtm(this.movesArr)
+		this.atm = this.calcAtm(this.movesArr)
+		this.qstm = this.calcQstm(this.movesArr)
+		this.etm = this.calcEtm(this.movesArr)
 	}
 
 	
@@ -45,17 +48,61 @@ export default class Alg {
 		return movesArr
 	}
 
+	invertMove(move) {
+		if (move[move.length - 1] === "'") {
+			return move.slice(0, move.length - 1)
+		}
+		return `${move}'`
+	}
+
 	strToArr(movesStr) {
 		return movesStr.split(' ')
 	}
 
-	calcHtmLength(movesArr) {
-		return movesArr.length
+
+	calcHtm(movesArr) {
+		return movesArr.reduce((acc, currentMove) => {
+			if (this.isWideTurn(currentMove) || this.isFaceTurn(currentMove)) {
+				return acc + 1
+			}
+			return acc
+		}, 0)
 	}
 
-	calcQtmLength(movesArr) {
+	calcAtm(movesArr) {
+		return movesArr.reduce((acc, currentMove) => !this.isRotation(currentMove) ? acc + 1 : acc, 0)
+	}
+
+	calcQuarterMoves(move) {
+		return (move.length === 1 || move[1] === "'") ? 1 : 2
+	}
+
+	calcQtm(movesArr) {
 		return movesArr.reduce((acc, currentMove) => {
-			return acc + ((currentMove.length === 1 || currentMove[1] === "'") ? 1 : 2)
+			if (this.isWideTurn(currentMove) || this.isFaceTurn(currentMove)) {
+				return acc + this.calcQuarterMoves(currentMove)
+			}
+			return acc
+		}, 0)
+	}
+
+	calcQstm(movesArr) {
+		return movesArr.reduce((acc, currentMove) => {
+			if (this.isWideTurn(currentMove) || this.isFaceTurn(currentMove) || this.isSlice(currentMove)) {
+				return acc + this.calcQuarterMoves(currentMove)
+			}
+			return acc
+		}, 0)
+	}
+
+	calcEtm(movesArr) {
+		return movesArr.reduce((acc, currentMove) => {
+			// R2/L2/r2/l2 is 1 etm, everything else is 2
+			const upperMove = currentMove.toUpperCase()
+			if (upperMove[0] === "R" || upperMove[0] === "L") {
+				return acc + 1
+			}
+			return acc + this.calcQuarterMoves(currentMove)
 		}, 0)
 	}
 
