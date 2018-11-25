@@ -24,12 +24,10 @@ export default class Alg {
 	
 	static rotateMove(rotation, move) {
 		const uppercaseMove = move.toUpperCase()
-		let translated
-		if (rotations[rotation][uppercaseMove]) {
-			translated = rotations[rotation][uppercaseMove]
-		} else {
-			translated = rotations[rotation][uppercaseMove[0]] + uppercaseMove.slice(1)
-		}
+		const translated = rotations[rotation][uppercaseMove] 
+			? rotations[rotation][uppercaseMove] 
+			: rotations[rotation][uppercaseMove[0]] + uppercaseMove.slice(1)
+
 		// check if translated move should be lowercase
 		if (move !== uppercaseMove) {
 			return translated.toLowerCase()
