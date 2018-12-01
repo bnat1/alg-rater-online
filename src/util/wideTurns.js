@@ -1,11 +1,11 @@
 export default {
 	"R": {
 		equivalentMove: "l",
-		rotation: "x"
+		rotation: "x'"
 	},
 	"R'": {
 		equivalentMove: "l'",
-		rotation: "x'"
+		rotation: "x"
 	},
 	"R2": {
 		equivalentMove: "l2",
@@ -13,11 +13,11 @@ export default {
 	},
 	U: {
 		equivalentMove: "d",
-		rotation: "y"
+		rotation: "y'"
 	},
 	"U'": {
 		equivalentMove: "d'",
-		rotation: "y'"
+		rotation: "y"
 	},
 	"U2": {
 		equivalentMove: "d2",
@@ -25,11 +25,11 @@ export default {
 	},
 	"L": {
 		equivalentMove: "r",
-		rotation: "x'"
+		rotation: "x"
 	},
 	"L'": {
 		equivalentMove: "r'",
-		rotation: "x"
+		rotation: "x'"
 	},
 	"L2": {
 		equivalentMove: "r2",
@@ -37,11 +37,11 @@ export default {
 	},
 	"D": {
 		equivalentMove: "u",
-		rotation: "y'"
+		rotation: "y"
 	},
 	"D'": {
 		equivalentMove: "u'",
-		rotation: "y"
+		rotation: "y'"
 	},
 	"D2": {
 		equivalentMove: "u2",
@@ -49,11 +49,11 @@ export default {
 	},
 	"F": {
 		equivalentMove: "b",
-		rotation: "z"
+		rotation: "z'"
 	},
 	"F'": {
 		equivalentMove: "b'",
-		rotation: "z'"
+		rotation: "z"
 	},
 	"F2": {
 		equivalentMove: "b2",
@@ -61,11 +61,11 @@ export default {
 	},
 	"B": {
 		equivalentMove: "f",
-		rotation: "z'"
+		rotation: "z"
 	},
 	"B'": {
 		equivalentMove: "f'",
-		rotation: "z'"
+		rotation: "z"
 	},
 	"B2": {
 		equivalentMove: "f2",

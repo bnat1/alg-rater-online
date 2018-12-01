@@ -1,6 +1,6 @@
 import Alg from '../../classes/Alg'
 import { assert } from 'chai'
-describe('alg class', () => {
+describe('alg constructor', () => {
 	it('constructs a basic alg and measures metrics', () => {
 		const testAlg = new Alg("R U R' U R U2 R'")
 		assert.deepEqual(testAlg.movesArr, ["R", "U", "R'", "U", "R", "U2", "R'"])
@@ -12,7 +12,7 @@ describe('alg class', () => {
 		assert.equal(testAlg.etm, 8)
 	})
 
-	it('correctly constructs an alg with rotations, slices, wide turns, and half turns with move count metrics', () => {
+	it('constructs an alg with rotations, slices, wide turns, and half turns', () => {
 		const testAlg = new Alg("y R u2' M' x2 z' M2 f E' L2")
 		// TODO: find way to allow for prime double turns, or find a new library, or make a new one
 		// assert.deepEqual(testAlg.movesArr, ["y", "R", "u2'", "M'", "x2", "z'", "M2", "f", "E'", "L2"])
@@ -23,7 +23,9 @@ describe('alg class', () => {
 		assert.equal(testAlg.qstm, 10)
 		assert.equal(testAlg.etm, 13)
 	})
+})
 
+describe('rotation translations', () => {
 	it('rotates M and U moves', () => {
 		const testAlgMU = new Alg("M2 U M U2 M' U M2 U'")
 		assert.deepEqual(Alg.rotateMoves("x", testAlgMU.movesArr), ["M2", "B", "M", "B2", "M'", "B", "M2", "B'"])
@@ -153,4 +155,74 @@ describe('alg class', () => {
 		assert.deepEqual(Alg.rotateMoves("z'", testAlgz.movesArr), ["z", "L", "z'", "L", "z2"])
 		assert.deepEqual(Alg.rotateMoves("z2", testAlgz.movesArr), ["z", "D", "z'", "D", "z2"])
 	})
+})
+
+describe('wide turn translations', () => {
+	it (`detects and applies "l" turns`, () => {
+		const testWideL = new Alg("R U R' U'")
+		assert.deepEqual(Alg.applyWideTurn(testWideL.movesArr), ["l", "F", "R'", "F'"])
+	})
+	it (`detects and applies "l'" turns`, () => {
+		const testWideLPrime = new Alg("R' U R U'")
+		assert.deepEqual(Alg.applyWideTurn(testWideLPrime.movesArr), ["l'", "B", "R", "B'"])
+	})
+	it (`detects and applies "l2" turns`, () => {
+		const testWideL2 = new Alg("R2 F R F' R")
+		assert.deepEqual(Alg.applyWideTurn(testWideL2.movesArr), ["l2", "B", "R", "B'", "R"])
+	})
+	it (`detects and applies "r" turns`, () => {
+		const testWideR = new Alg("L' U' L U")
+		assert.deepEqual(Alg.applyWideTurn(testWideR.movesArr), ["r'", "F'", "L", "F"])
+	})
+	it (`detects and applies "r'" turns`, () => {
+		const testWideRPrime = new Alg("L U' L' U")
+		assert.deepEqual(Alg.applyWideTurn(testWideRPrime.movesArr), ["r", "B'", "L'", "B"])
+	})
+	it (`detects and applies "r2" turns`, () => {
+		const testWideR2 = new Alg("L2 F' L' F L'")
+		assert.deepEqual(Alg.applyWideTurn(testWideR2.movesArr), ["r2", "B'", "L'", "B", "L'"])
+	})
+	it (`detects and applies "u" turns`, () => {
+		const testWideU = new Alg("D R U' R' D'")
+		assert.deepEqual(Alg.applyWideTurn(testWideU.movesArr), ["u", "F", "U'", "F'", "D'"])
+	})
+	it (`detects and applies "u'" turns`, () => {
+		const testWideUPrime = new Alg("D' R U' R' D")
+		assert.deepEqual(Alg.applyWideTurn(testWideUPrime.movesArr), ["u'", "B", "U'", "B'", "D"])
+	})
+	it (`detects and applies "u2" turns`, () => {
+		const testWideU2 = new Alg("D2 R U' R' D2")
+		assert.deepEqual(Alg.applyWideTurn(testWideU2.movesArr), ["u2", "L", "U'", "L'", "D2"])
+	})
+	it (`detects and applies "d" turns`, () => {
+		const testWideD = new Alg("U R U' R'")
+		assert.deepEqual(Alg.applyWideTurn(testWideD.movesArr), ["d","B", "U'", "B'"])
+	})
+	it (`detects and applies "d'" turns`, () => {
+		const testWideDPrime = new Alg("U' R' U R")
+		assert.deepEqual(Alg.applyWideTurn(testWideDPrime.movesArr), ["d'", "F'", "U", "F"])
+	})
+	it (`detects and applies "d2" turns`, () => {
+		const testWideD2 = new Alg("U2", "R", "U", "R'")
+		assert.deepEqual(Alg.applyWideTurn(testWideD2.movesArr), ["d2", "L", "U", "L'"])
+	})
+	it (`detects and applies "f" turns`, () => {
+		const testWideF = new Alg("B U B' U'")
+		assert.deepEqual(Alg.applyWideTurn(testWideF.movesArr), ["f", "R", "B'", "R'"])
+	})
+	it (`detects and applies "f'" turns`, () => {
+
+	})
+	it (`detects and applies "f2" turns`, () => {
+		
+	})
+	it (`detects and applies "b" turns`, () => {
+
+	})
+	it (`detects and applies "b'" turns`, () => {
+
+	})
+	it (`detects and applies "b2" turns`, () => {
+		
+	})	
 })
