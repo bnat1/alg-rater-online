@@ -2,35 +2,35 @@ export default {
 	"M": {
 		// The moves are in alphabetical order to avoid redundancy
 		"moves": ["L'", "R"],
-		"rotation": "x'"
+		"rotation": "x"
 	},
 	"M'": {
 		"moves": ["L", "R'"],
-		"rotation": "x"
+		"rotation": "x'"
 	},
 	"M2": {
 		"moves": ["L2", "R2"],
 		"rotation": "x2"
-	}
+	},
 	"S": {
-		"moves": ["F'", "B"]
-		"rotation": "z"
+		"moves": ["F'", "B"],
+		"rotation": "z'"
 	},
 	"S'": {
-		"moves": ["F", "B'"]
-		"rotation": "z'"
+		"moves": ["F", "B'"],
+		"rotation": "z"
 	},
 	"S2": {
 		"moves": ["F2", "B2"],
 		"rotation": "z2"
-	}	
+	},
 	"E": {
 		"moves": ["D'", "U"],
-		"rotation": "y'"
+		"rotation": "y"
 	},
 	"E'": {
 		"moves": ["D", "U'"],
-		"rotation": "y"
+		"rotation": "y'"
 	},
 	"E2": {
 		"moves": ["D2", "U2"],

@@ -1,6 +1,6 @@
 import Alg from '../../classes/Alg'
 import { assert } from 'chai'
-describe('alg constructor', () => {
+describe('Alg constructor', () => {
 	it('constructs a basic alg and measures metrics', () => {
 		const testAlg = new Alg("R U R' U R U2 R'")
 		assert.deepEqual(testAlg.movesArr, ["R", "U", "R'", "U", "R", "U2", "R'"])
@@ -25,7 +25,7 @@ describe('alg constructor', () => {
 	})
 })
 
-describe('rotation translations', () => {
+describe('Rotation translations', () => {
 	it('rotates M and U moves', () => {
 		const testAlgMU = new Alg("M2 U M U2 M' U M2 U'")
 		assert.deepEqual(Alg.rotateMoves("x", testAlgMU.movesArr), ["M2", "B", "M", "B2", "M'", "B", "M2", "B'"])
@@ -38,7 +38,6 @@ describe('rotation translations', () => {
 		assert.deepEqual(Alg.rotateMoves("z'", testAlgMU.movesArr), ["E2", "L", "E", "L2", "E'", "L", "E2", "L'"])
 		assert.deepEqual(Alg.rotateMoves("z2", testAlgMU.movesArr), ["M2", "D", "M'", "D2", "M", "D", "M2", "D'"])
 	})
-
 	it ('rotates E and L moves', () => {
 		const testAlgEL = new Alg("E2 L E L2 E' L E2 L'")
 		assert.deepEqual(Alg.rotateMoves("x", testAlgEL.movesArr), ["S2", "L", "S", "L2", "S'", "L", "S2", "L'"])
@@ -51,7 +50,6 @@ describe('rotation translations', () => {
 		assert.deepEqual(Alg.rotateMoves("z'", testAlgEL.movesArr), ["M2", "D", "M'", "D2", "M", "D", "M2", "D'"])
 		assert.deepEqual(Alg.rotateMoves("z2", testAlgEL.movesArr), ["E2", "R", "E'", "R2", "E", "R", "E2", "R'"])
 	})
-
 	it ('rotates S and D moves', () => {
 		const testAlgSD = new Alg("S2 D S D2 S' D S2 D'")
 		assert.deepEqual(Alg.rotateMoves("x", testAlgSD.movesArr), ["E2", "F", "E'", "F2", "E", "F", "E2", "F'"])
@@ -64,7 +62,6 @@ describe('rotation translations', () => {
 		assert.deepEqual(Alg.rotateMoves("z'", testAlgSD.movesArr), ["S2", "R", "S", "R2", "S'", "R", "S2", "R'"])
 		assert.deepEqual(Alg.rotateMoves("z2", testAlgSD.movesArr), ["S2", "U", "S", "U2", "S'", "U", "S2", "U'"])
 	})
-
 	it ('rotates R and F moves', () => {
 		const testAlgRF = new Alg("R2 F R F R' F' R' F' R' F R' F2")
 		assert.deepEqual(Alg.rotateMoves("x", testAlgRF.movesArr), ["R2", "U", "R", "U", "R'", "U'", "R'", "U'", "R'", "U", "R'", "U2"])
@@ -77,7 +74,6 @@ describe('rotation translations', () => {
 		assert.deepEqual(Alg.rotateMoves("z'", testAlgRF.movesArr), ["U2", "F", "U", "F", "U'", "F'", "U'", "F'", "U'", "F", "U'", "F2"])
 		assert.deepEqual(Alg.rotateMoves("z2", testAlgRF.movesArr), ["L2", "F", "L", "F", "L'", "F'", "L'", "F'", "L'", "F", "L'", "F2"])
 	})
-
 	it ('rotates r and B moves', () => {
 		const testAlgrB = new Alg("r2 B r B r' B' r' B' r' B r' B2")
 		assert.deepEqual(Alg.rotateMoves("x", testAlgrB.movesArr), ["r2", "D", "r", "D", "r'", "D'", "r'", "D'", "r'", "D", "r'", "D2"])
@@ -90,7 +86,6 @@ describe('rotation translations', () => {
 		assert.deepEqual(Alg.rotateMoves("z'", testAlgrB.movesArr), ["u2", "B", "u", "B", "u'", "B'", "u'", "B'", "u'", "B", "u'", "B2"])
 		assert.deepEqual(Alg.rotateMoves("z2", testAlgrB.movesArr), ["l2", "B", "l", "B", "l'", "B'", "l'", "B'", "l'", "B", "l'", "B2"])
 	})
-
 	it ('rotates f and u moves', () => {
 		const testAlgfu = new Alg("f2 u f u f' u' f' u' f' u f' u2")
 		assert.deepEqual(Alg.rotateMoves("x", testAlgfu.movesArr), ["u2", "b", "u", "b", "u'", "b'", "u'", "b'", "u'", "b", "u'", "b2"])
@@ -103,7 +98,6 @@ describe('rotation translations', () => {
 		assert.deepEqual(Alg.rotateMoves("z'", testAlgfu.movesArr), ["f2", "l", "f", "l", "f'", "l'", "f'", "l'", "f'", "l", "f'", "l2"])
 		assert.deepEqual(Alg.rotateMoves("z2", testAlgfu.movesArr), ["f2", "d", "f", "d", "f'", "d'", "f'", "d'", "f'", "d", "f'", "d2"])
 	})
-
 	it('rotates b and l moves', () => {
 		const testAlglb = new Alg("b2 l b l b' l' b' l' b' l b' l2")
 		assert.deepEqual(Alg.rotateMoves("x", testAlglb.movesArr), ["d2", "l", "d", "l", "d'", "l'", "d'", "l'", "d'", "l", "d'", "l2"])
@@ -116,7 +110,6 @@ describe('rotation translations', () => {
 		assert.deepEqual(Alg.rotateMoves("z'", testAlglb.movesArr), ["b2", "d", "b", "d", "b'", "d'", "b'", "d'", "b'", "d", "b'", "d2"])
 		assert.deepEqual(Alg.rotateMoves("z2", testAlglb.movesArr), ["b2", "r", "b", "r", "b'", "r'", "b'", "r'", "b'", "r", "b'", "r2"])
 	})
-
 	it('rotates x and d moves', () => {
 		const testAlgxd = new Alg("d x d' x' d2 x2")
 		assert.deepEqual(Alg.rotateMoves("x", testAlgxd.movesArr), ["f", "x", "f'", "x'", "f2", "x2"])
@@ -129,7 +122,6 @@ describe('rotation translations', () => {
 		assert.deepEqual(Alg.rotateMoves("z'", testAlgxd.movesArr), ["r", "y", "r'", "y'", "r2", "y2"])
 		assert.deepEqual(Alg.rotateMoves("z2", testAlgxd.movesArr), ["u", "x'", "u'", "x", "u2", "x2"])
 	})
-
 	it('rotates y moves', () => {
 		const testAlgy = new Alg("y F y' F y2")
 		assert.deepEqual(Alg.rotateMoves("x", testAlgy.movesArr), ["z'", "U", "z", "U", "z2"])
@@ -142,7 +134,6 @@ describe('rotation translations', () => {
 		assert.deepEqual(Alg.rotateMoves("z'", testAlgy.movesArr), ["x'", "F", "x", "F", "x2"])
 		assert.deepEqual(Alg.rotateMoves("z2", testAlgy.movesArr), ["y'", "F", "y", "F", "y2"])
 	})
-
 	it('rotates z moves', () => {
 		const testAlgz = new Alg("z U z' U z2")
 		assert.deepEqual(Alg.rotateMoves("x", testAlgz.movesArr), ["y", "B", "y'", "B", "y2"])
@@ -155,9 +146,37 @@ describe('rotation translations', () => {
 		assert.deepEqual(Alg.rotateMoves("z'", testAlgz.movesArr), ["z", "L", "z'", "L", "z2"])
 		assert.deepEqual(Alg.rotateMoves("z2", testAlgz.movesArr), ["z", "D", "z'", "D", "z2"])
 	})
+	it('performs all possible rotations', () => {
+		const testAlg = new Alg("U R")
+		assert.deepEqual(Alg.getAllRotations(testAlg.movesArr), [
+			{ rotation: 'x', transformedMoves: [ 'B', 'R' ] },
+			{ rotation: 'x\'', transformedMoves: [ 'F', 'R' ] },
+			{ rotation: 'y', transformedMoves: [ 'U', 'F' ] },
+			{ rotation: 'y\'', transformedMoves: [ 'U', 'B' ] },
+			{ rotation: 'z', transformedMoves: [ 'R', 'D' ] },
+			{ rotation: 'z\'', transformedMoves: [ 'L', 'U' ] },
+			{ rotation: 'x2', transformedMoves: [ 'D', 'R' ] },
+			{ rotation: 'y2', transformedMoves: [ 'U', 'L' ] },
+			{ rotation: 'z2', transformedMoves: [ 'D', 'L' ] },
+			{ rotation: [ 'y', 'x' ], transformedMoves: [ 'B', 'U' ] },
+			{ rotation: [ 'y', 'x\'' ], transformedMoves: [ 'F', 'D' ] },
+			{ rotation: [ 'y', 'x2' ], transformedMoves: [ 'D', 'B' ] },
+			{ rotation: [ 'y', 'z' ], transformedMoves: [ 'R', 'F' ] },
+			{ rotation: [ 'y', 'z\'' ], transformedMoves: [ 'L', 'F' ] },
+			{ rotation: [ 'y\'', 'x' ], transformedMoves: [ 'B', 'D' ] },
+			{ rotation: [ 'y\'', 'x\'' ], transformedMoves: [ 'F', 'U' ] },
+			{ rotation: [ 'y\'', 'x2' ], transformedMoves: [ 'D', 'F' ] },
+			{ rotation: [ 'y\'', 'z\'' ], transformedMoves: [ 'L', 'B' ] },
+			{ rotation: [ 'y\'', 'z' ], transformedMoves: [ 'R', 'B' ] },
+			{ rotation: [ 'y2', 'x' ], transformedMoves: [ 'B', 'L' ] },
+			{ rotation: [ 'y2', 'x\'' ], transformedMoves: [ 'F', 'L' ] },
+			{ rotation: [ 'y2', 'z' ], transformedMoves: [ 'R', 'U' ] },
+			{ rotation: [ 'y2', 'z\'' ], transformedMoves: [ 'L', 'D' ] }
+		])
+	})
 })
 
-describe('wide turn translations', () => {
+describe('Wide turn translations', () => {
 	it (`detects and applies "l" turns`, () => {
 		const testWideL = new Alg("R U R' U'")
 		assert.deepEqual(Alg.applyWideTurn(testWideL.movesArr), ["l", "F", "R'", "F'"])
@@ -203,13 +222,14 @@ describe('wide turn translations', () => {
 		assert.deepEqual(Alg.applyWideTurn(testWideDPrime.movesArr), ["d'", "F'", "U", "F"])
 	})
 	it (`detects and applies "d2" turns`, () => {
-		const testWideD2 = new Alg("U2", "R", "U", "R'")
+		const testWideD2 = new Alg("U2 R U R'")
 		assert.deepEqual(Alg.applyWideTurn(testWideD2.movesArr), ["d2", "L", "U", "L'"])
 	})
 	it (`detects and applies "f" turns`, () => {
 		const testWideF = new Alg("B U B' U'")
 		assert.deepEqual(Alg.applyWideTurn(testWideF.movesArr), ["f", "R", "B'", "R'"])
 	})
+	// TODO: Finish these, and also go from wide turn to face turn
 	it (`detects and applies "f'" turns`, () => {
 
 	})
@@ -224,5 +244,39 @@ describe('wide turn translations', () => {
 	})
 	it (`detects and applies "b2" turns`, () => {
 		
-	})	
+	})
+})
+
+describe("Slice translations", () => {
+	it (`detects and applies M`, () => {
+		const testM = new Alg("L R' F R")
+		assert.deepEqual(Alg.applySlice(testM.movesArr), ["M'", "U", "R"])
+		const test2M = new Alg("M' U R")
+		assert.deepEqual(Alg.applySlice(test2M.movesArr), ["L", "R'", "F", "R"])
+	})
+	// TODO
+	it(`detects and applies M'`, () => {
+
+	})
+	it(`detects and applies M2`, () => {
+		
+	})
+	it(`detects and applies S`, () => {
+		
+	})
+	it(`detects and applies S'`, () => {
+		
+	})
+	it(`detects and applies S2`, () => {
+		
+	})
+	it(`detects and applies E`, () => {
+		
+	})
+	it(`detects and applies E'`, () => {
+		
+	})
+	it(`detects and applies E2`, () => {
+		
+	})
 })

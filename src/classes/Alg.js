@@ -7,6 +7,10 @@ const validRotations = new Set(['x', 'y', 'z'])
 const validSliceMoves = new Set(['M', 'E', 'S'])
 const validWideTurns = new Set(['u', 'r', 'd', 'l', 'f', 'b'])
 const validFaceTurns = new Set(['U', 'R', 'D', 'L', 'F', 'B'])
+const allRotations = ["x", "x'", "y", "y'", "z", "z'", "x2", "y2", "z2", 
+["y","x"], ["y", "x'"], ["y", "x2"], ["y", "z"], ["y", "z'"], ["y'", "x"], [ "y'", "x'"], 
+["y'", "x2"], ["y'", "z'"], ["y'", "z"], ["y2", "x"], ["y2", "x'"], ["y2", "z"], ["y2", "z'"]]
+
 
 export default class Alg {
 	constructor(algStr) {
@@ -20,7 +24,6 @@ export default class Alg {
 		this.etm = this.constructor.calcEtm(this.movesArr)
 	}
 
-	
 	static rotateMove(rotation, move) {
 		// TODO: guard against empty move
 		const uppercaseMove = move.toUpperCase()
@@ -35,11 +38,21 @@ export default class Alg {
 		return translated
 	}
 
-	// Apply Rotation to given sequence of moves
+	// Apply Rotation to a sequence of moves
 	// This may make better sense in the rater class, but it's here for now.
 	static rotateMoves(rotation, movesArr) {
 		// TODO: guard against empty moves
 		return movesArr.map(move => this.rotateMove(rotation, move))
+	}
+
+	// Apply all possible rotations to a sequence of moves
+	static getAllRotations(movesArr) {
+		return allRotations.map(rotation => ({
+			rotation,
+			transformedMoves: Array.isArray(rotation) 
+				? rotation.reduce((acc, currentRotation) => this.rotateMoves(currentRotation, acc), movesArr)
+				: this.rotateMoves(rotation, movesArr)
+		}))
 	}
 
 	// This one definitely should be in the cube manipulator
@@ -53,11 +66,14 @@ export default class Alg {
 		return movesArr
 	}
 
+	// turns first two moves into slice (if possible), and transform the rest of the moves
+	// if first move is a slice, this function expands the slice moves
 	static applySlice(movesArr) {
 		// TODO: guard against empty move
 		if (this.isSlice(movesArr[0])) {
-			const { moves: firstTwoMoves, rotation } = rotations[movesArr[0]]
-			return [...firstTwoMoves, ...this.rotateMoves(movesArr.slice(1))]
+			// Turn slice into two separate moves
+			const { moves: firstTwoMoves, rotation } = slices[movesArr[0]]
+			return [...firstTwoMoves, ...this.rotateMoves(rotation, movesArr.slice(1))]
 		}
 
 		if (movesArr.length < 2) {
@@ -65,7 +81,11 @@ export default class Alg {
 		}
 
 		const firstTwoMovesStr = movesArr.slice(0, 2).sort().join(", ")
-		if () // TODO: get slice move using two moves
+		let { moves: sliceMove, rotation } = slices[firstTwoMovesStr]
+		if (sliceMove) {
+			// Turn two separate moves into slice
+			return [...sliceMove, ...this.rotateMoves(rotation, movesArr.slice(2))]
+		} 	
 		return movesArr
 	}
 
@@ -144,5 +164,9 @@ export default class Alg {
 
 	static isFaceTurn(move) {
 		return validFaceTurns.has(move[0])
+	}
+
+	static isDoubleTurn(move) {
+		return move.includes('2')
 	}
 }
