@@ -149,6 +149,7 @@ describe('Rotation translations', () => {
 	it('performs all possible rotations', () => {
 		const testAlg = new Alg("U R")
 		assert.deepEqual(Alg.getAllRotations(testAlg.movesArr), [
+			{ rotation: '', transformedMoves: [ 'U', 'R' ] },
 			{ rotation: 'x', transformedMoves: [ 'B', 'R' ] },
 			{ rotation: 'x\'', transformedMoves: [ 'F', 'R' ] },
 			{ rotation: 'y', transformedMoves: [ 'U', 'F' ] },
@@ -166,13 +167,17 @@ describe('Rotation translations', () => {
 			{ rotation: [ 'y\'', 'x' ], transformedMoves: [ 'B', 'D' ] },
 			{ rotation: [ 'y\'', 'x\'' ], transformedMoves: [ 'F', 'U' ] },
 			{ rotation: [ 'y\'', 'x2' ], transformedMoves: [ 'D', 'F' ] },
-			{ rotation: [ 'y\'', 'z\'' ], transformedMoves: [ 'L', 'B' ] },
 			{ rotation: [ 'y\'', 'z' ], transformedMoves: [ 'R', 'B' ] },
+			{ rotation: [ 'y\'', 'z\'' ], transformedMoves: [ 'L', 'B' ] },
 			{ rotation: [ 'y2', 'x' ], transformedMoves: [ 'B', 'L' ] },
 			{ rotation: [ 'y2', 'x\'' ], transformedMoves: [ 'F', 'L' ] },
 			{ rotation: [ 'y2', 'z' ], transformedMoves: [ 'R', 'U' ] },
 			{ rotation: [ 'y2', 'z\'' ], transformedMoves: [ 'L', 'D' ] }
 		])
+	})
+	it('normalizes the execution angle', () => {
+		const testAlg = new Alg("x y z2 R U")
+		assert.deepEqual(Alg.normalizeAngle(testAlg.movesArr), ["D", "B"])
 	})
 })
 
@@ -244,6 +249,17 @@ describe('Wide turn translations', () => {
 	})
 	it (`detects and applies "b2" turns`, () => {
 		
+	})
+})
+
+describe("Invert Moves", () => {
+	it(`inverts moves`, () => {
+		const testAlg = new Alg("x")
+		const testAlg2 = new Alg("x'")
+		const testAlg3 = new Alg("R2")
+		assert.equal(Alg.invertMove(testAlg.movesArr[0]), "x'")
+		assert.equal(Alg.invertMove(testAlg2.movesArr[0]), "x")		
+		assert.equal(Alg.invertMove(testAlg3.movesArr[0]), "R2")
 	})
 })
 

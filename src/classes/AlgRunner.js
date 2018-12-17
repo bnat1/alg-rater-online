@@ -26,39 +26,26 @@ export default class AlgRunner {
 			return
 		}
 
-		// do first move and judge it
-		// this is still wrong. the first turn will never be transformed. 
-		const { score, nextMoves, singleExecutedMove } = hands.doTurn(remainingMoves)
-		currentCandidate.moves = [...currentCandidate.moves, ...singleExecutedMove] 
-		currentCandidate.score += score
-		// TODO: run
+		// get rotations
+		// get executions for first move
+		// depth control
+		// run remaining moves
+
+		if (/*move is slice or could be slice*/) {
+			// transform to slice
+			// get rotations
+			// get executions for first moves
+			// depth control
+			// run remaining moves
 		
-		// search depth control
-		if (currentCandidate.score > candidateExecutions[maxAllowedCandidates.length - 1].score) {
-			return
+		} else if (Alg.isWideTurn(remainingMoves[0]) || Alg.isFaceTurn(remainingMoves[0])) {
+			// transform to wide turn
+			// get rotations
+			// get executions for first moves
+			// depth control
+			// run remaining moves
+		
 		}
-
-		// run with wide turn as next move
-		const remainingMovesWideTurn = Alg.applyWideTurn(nextMoves)
-		if (remainingMovesWideTurn[0] !== nextMoves[0]) {
-			// TODO: this should be doTurn and then run
-			run([...remainingMovesWideTurn], currentCandidate, candidateExecutions, maxAllowedCandidates, hands)
-		}
-
-		// run with slice as next move (if possible)
-		const remainingMovesSlice = Alg.applySlice(nextMoves)
-		if (remainingMovesSlice[0] !== nextMoves[0]) {
-			// TODO: this should be doTurn and then run
-			run([...remainingMovesSlice], currentCandidate, candidateExecutions, maxAllowedCandidates, hands)
-		}
-
-		// run with rotations as next move
-		// todo: prevent infinite recursion
-		allRotations.forEach(rotation => {
-			const remainingMovesRotation = rotateMoves(rotation, nextMoves)
-			// TODO: this should be doTurn and then run
-			run([rotation, ...remainingMovesRotation], currentCandidate, candidateExecutions, maxAllowedCandidates, hands)
-		})
 
 		return candidateExecutions
 	}

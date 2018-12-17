@@ -7,16 +7,16 @@ const validRotations = new Set(['x', 'y', 'z'])
 const validSliceMoves = new Set(['M', 'E', 'S'])
 const validWideTurns = new Set(['u', 'r', 'd', 'l', 'f', 'b'])
 const validFaceTurns = new Set(['U', 'R', 'D', 'L', 'F', 'B'])
-const allRotations = ["x", "x'", "y", "y'", "z", "z'", "x2", "y2", "z2", 
-["y","x"], ["y", "x'"], ["y", "x2"], ["y", "z"], ["y", "z'"], ["y'", "x"], [ "y'", "x'"], 
-["y'", "x2"], ["y'", "z'"], ["y'", "z"], ["y2", "x"], ["y2", "x'"], ["y2", "z"], ["y2", "z'"]]
+const allRotations = ["", "x", "x'", "y", "y'", "z", "z'", "x2", "y2", "z2", ["y","x"],
+	["y", "x'"], ["y", "x2"], ["y", "z"], ["y", "z'"], ["y'", "x"], [ "y'", "x'"], ["y'", "x2"], 
+	["y'", "z"], ["y'", "z'"], ["y2", "x"], ["y2", "x'"], ["y2", "z"], ["y2", "z'"]]
 
 
 export default class Alg {
 	constructor(algStr) {
 		this.originalInput = algStr
 		this.movesStr = normalize(algStr)
-		this.movesArr = this.constructor.strToArr(this.movesStr)
+		this.movesArr = this.movesStr.split(" ")
 		this.htm = this.constructor.calcHtm(this.movesArr)
 		this.qtm = this.constructor.calcQtm(this.movesArr)
 		this.atm = this.constructor.calcAtm(this.movesArr)
@@ -24,38 +24,52 @@ export default class Alg {
 		this.etm = this.constructor.calcEtm(this.movesArr)
 	}
 
-	static rotateMove(rotation, move) {
-		// TODO: guard against empty move
-		const uppercaseMove = move.toUpperCase()
-		const translated = rotations[rotation][uppercaseMove] 
-			? rotations[rotation][uppercaseMove] 
-			: rotations[rotation][uppercaseMove[0]] + uppercaseMove.slice(1)
-
-		// check if translated move should be lowercase
-		if (move !== uppercaseMove) {
-			return translated.toLowerCase()
+	// Apply Rotation to a sequence of moves
+	static rotateMoves(rotation, movesArr) {
+		if (!rotation) {
+			return movesArr
 		}
-		return translated
+		const rotated = movesArr.map(move => {
+			const uppercaseMove = move.toUpperCase()
+			const translated = rotations[rotation][uppercaseMove] 
+				? rotations[rotation][uppercaseMove] 
+				: rotations[rotation][uppercaseMove[0]] + uppercaseMove.slice(1)
+
+			// check if translated move should be lowercase
+			if (move !== uppercaseMove) {
+				return translated.toLowerCase()
+			}
+			return translated
+		})
+		// TODO: add rotation to end
+		return rotated
 	}
 
-	// Apply Rotation to a sequence of moves
-	// This may make better sense in the rater class, but it's here for now.
-	static rotateMoves(rotation, movesArr) {
-		// TODO: guard against empty moves
-		return movesArr.map(move => this.rotateMove(rotation, move))
+	// get rid of existing initial rotation(s)
+	static normalizeAngle(movesArr) {
+		if (!this.isRotation(movesArr[0])) {
+			return movesArr
+		}
+		return this.normalizeAngle(this.rotateMoves(this.invertMove(movesArr[0]), movesArr.slice(1)))
 	}
 
 	// Apply all possible rotations to a sequence of moves
 	static getAllRotations(movesArr) {
+		const movesNormalizedAngle = this.normalizeAngle(movesArr)
+		
+		if (movesNormalizedAngle.length === 0) {
+			return movesNormalizedAngle
+		}
+
 		return allRotations.map(rotation => ({
 			rotation,
 			transformedMoves: Array.isArray(rotation) 
-				? rotation.reduce((acc, currentRotation) => this.rotateMoves(currentRotation, acc), movesArr)
-				: this.rotateMoves(rotation, movesArr)
+				? rotation.reduce((acc, currentRotation) => this.rotateMoves(currentRotation, acc), movesNormalizedAngle)
+				: this.rotateMoves(rotation, movesNormalizedAngle)
 		}))
 	}
 
-	// This one definitely should be in the cube manipulator
+	// TODO: Should this only apply wide turns when a move follows a rotation?
 	// return the array of moves, transformed by turning the first turn into a wide turn (or undoing a wide turn)
 	static applyWideTurn(movesArr) {
 		// TODO: guard against empty moves
@@ -68,7 +82,7 @@ export default class Alg {
 
 	// turns first two moves into slice (if possible), and transform the rest of the moves
 	// if first move is a slice, this function expands the slice moves
-	static applySlice(movesArr) {
+	static applySlice(movesArr, rotationOptions) {
 		// TODO: guard against empty move
 		if (this.isSlice(movesArr[0])) {
 			// Turn slice into two separate moves
@@ -89,15 +103,14 @@ export default class Alg {
 		return movesArr
 	}
 
+	// for now this doesn't invert double moves. 
 	static invertMove(move) {
-		if (move[move.length - 1] === "'") {
-			return move.slice(0, move.length - 1)
+		if (move[1] === "2") {
+			return move
+		} else if (move[1] === "'") {
+			return move.slice(0, 1)
 		}
 		return `${move}'`
-	}
-
-	static strToArr(movesStr) {
-		return movesStr.split(' ')
 	}
 
 	static calcHtm(movesArr) {
