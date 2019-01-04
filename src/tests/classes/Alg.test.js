@@ -1,5 +1,14 @@
 import Alg from '../../classes/Alg'
+import AlgRunner from '../../classes/AlgRunner'
 import { assert } from 'chai'
+function isSortedByScore(candidates) {
+	let previousScore = candidates[0].score
+	for (let i = 1; i < candidates.length; i++) {
+		assert.isAtLeast(candidates[i].score, previousScore, `At index: ${i}, expected ${candidates[i].score} to be at least ${previousScore}`)
+		previousScore = candidates[i].score
+	}
+}
+
 describe('Alg constructor', () => {
 	it('constructs a basic alg and measures metrics', () => {
 		const testAlg = new Alg("R U R' U R U2 R'")
@@ -149,16 +158,16 @@ describe('Rotation translations', () => {
 	it('performs all possible rotations', () => {
 		const testAlg = new Alg("U R")
 		assert.deepEqual(Alg.getAllRotations(testAlg.movesArr), [
-			{ rotation: '', transformedMoves: [ 'U', 'R' ] },
-			{ rotation: 'x', transformedMoves: [ 'B', 'R' ] },
-			{ rotation: 'x\'', transformedMoves: [ 'F', 'R' ] },
-			{ rotation: 'y', transformedMoves: [ 'U', 'F' ] },
-			{ rotation: 'y\'', transformedMoves: [ 'U', 'B' ] },
-			{ rotation: 'z', transformedMoves: [ 'R', 'D' ] },
-			{ rotation: 'z\'', transformedMoves: [ 'L', 'U' ] },
-			{ rotation: 'x2', transformedMoves: [ 'D', 'R' ] },
-			{ rotation: 'y2', transformedMoves: [ 'U', 'L' ] },
-			{ rotation: 'z2', transformedMoves: [ 'D', 'L' ] },
+			{ rotation: [], transformedMoves: [ 'U', 'R' ] },
+			{ rotation: ['x'], transformedMoves: [ 'B', 'R' ] },
+			{ rotation: ['x\''], transformedMoves: [ 'F', 'R' ] },
+			{ rotation: ['y'], transformedMoves: [ 'U', 'F' ] },
+			{ rotation: ['y\''], transformedMoves: [ 'U', 'B' ] },
+			{ rotation: ['z'], transformedMoves: [ 'R', 'D' ] },
+			{ rotation: ['z\''], transformedMoves: [ 'L', 'U' ] },
+			{ rotation: ['x2'], transformedMoves: [ 'D', 'R' ] },
+			{ rotation: ['y2'], transformedMoves: [ 'U', 'L' ] },
+			{ rotation: ['z2'], transformedMoves: [ 'D', 'L' ] },
 			{ rotation: [ 'y', 'x' ], transformedMoves: [ 'B', 'U' ] },
 			{ rotation: [ 'y', 'x\'' ], transformedMoves: [ 'F', 'D' ] },
 			{ rotation: [ 'y', 'x2' ], transformedMoves: [ 'D', 'B' ] },
@@ -296,3 +305,96 @@ describe("Slice translations", () => {
 		
 	})
 })
+describe(`insertion of candidates`, () => {
+	// this would be more efficient as a heap, especailly if I want to allow many candidates.
+	it(`adds candidates in order when found`, () => {
+		let candidates = []
+		AlgRunner.addCandidate({ score: 1, execution: [{ moves: ['R'] }] }, candidates, 3)
+		isSortedByScore(candidates)
+		AlgRunner.addCandidate({ score: 0, execution: [{ moves: ['R'] }] }, candidates, 3)
+		isSortedByScore(candidates)
+		AlgRunner.addCandidate({ score: 3, execution: [{ moves: ['R'] }] }, candidates, 3)
+		isSortedByScore(candidates)
+		AlgRunner.addCandidate({score: 2, execution: [{ moves: ['R'] }]}, candidates, 3)
+		isSortedByScore(candidates)		
+		AlgRunner.addCandidate({score: 4, execution: [{ moves: ['R'] }]}, candidates, 3)
+		isSortedByScore(candidates)
+	})
+})
+
+describe(`rotate before executing a move and applies penalties`, () => {
+	it(`returns -1 for first move index if there are no moves`, () => {
+		let noMoves = ['x', 'y2', 'z']
+		let { rotationPenalty, firstMoveIndex } = AlgRunner.rotateBeforeMove(noMoves)
+		assert.equal(rotationPenalty, 4)
+		assert.equal(firstMoveIndex, -1)
+	})
+	it(`doesn't rotates before executing a move if there is no rotation`, () => {
+		let noRotations = ['R']
+		let { rotationPenalty, firstMoveIndex } = AlgRunner.rotateBeforeMove(noRotations)
+		assert.equal(firstMoveIndex, 0)
+		assert.equal(rotationPenalty, 0)
+	})
+	it(`rotates once before executing a move`, () => {
+		let oneRotation = ['y2', 'R']
+		let { rotationPenalty, firstMoveIndex } = AlgRunner.rotateBeforeMove(oneRotation)
+		assert.equal(firstMoveIndex, 1)
+		assert.equal(rotationPenalty, 2)		
+	})
+	it(`rotates twice before executing a move`, () => {
+		let twoRotations = ['y2', 'x2', 'R']
+		let { rotationPenalty, firstMoveIndex } = AlgRunner.rotateBeforeMove(twoRotations)
+		assert.equal(firstMoveIndex, 2)
+		assert.equal(rotationPenalty, 4)
+	})
+})
+
+describe(`does move and applies penalties`, () => {
+	it (`does not apply a regrip penalty when hands aren't defined`, () => {
+		const execution = {
+			penalty: 1,
+			hand: "right",
+			position: 1
+		}
+		let hands = {}
+		let score = 0
+		let moves = ['R']
+		let firstMoveIndex = 0
+		const { movePenalty, regripPenalty, newHands } = AlgRunner.doMove(execution, hands, score, moves, firstMoveIndex)
+		assert.equal(movePenalty, 1)
+		assert.equal(regripPenalty, 0)
+		assert.deepEqual(newHands, { right: 1 })
+	})
+	it (`applies a regrip penalty when hands are defined`, () => {
+		const execution = {
+			penalty: 1,
+			hand: "right",
+			position: 1
+		}
+		let hands = { right: 0 }
+		let score = 0
+		let moves = ['R']
+		let firstMoveIndex = 0
+		const { regripPenalty, movePenalty, newHands } = AlgRunner.doMove(execution, hands, score, moves, firstMoveIndex)
+		assert.equal(regripPenalty, 1)
+		assert.equal(movePenalty, 1)
+		assert.deepEqual(newHands, { right: 1 })
+	})
+})
+
+describe(`Candidate finding algorithm`, () => {
+	const testBasicAlg = new Alg("R U")
+	const candidates = AlgRunner.run(testBasicAlg.movesArr, 10)
+	// console.error("result:", JSON.stringify(candidates, null, '\t'))
+	
+	it (`returns the correct number of candiates`, () => {
+		assert.equal(candidates.length, 10)
+	})
+	it(`sorts the candidates by score`, () => {
+		isSortedByScore(candidates)
+	})
+})
+
+// TODO:
+// show only the best regrip
+// do special moves (slices, small moves)

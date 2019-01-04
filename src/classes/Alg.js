@@ -7,7 +7,7 @@ const validRotations = new Set(['x', 'y', 'z'])
 const validSliceMoves = new Set(['M', 'E', 'S'])
 const validWideTurns = new Set(['u', 'r', 'd', 'l', 'f', 'b'])
 const validFaceTurns = new Set(['U', 'R', 'D', 'L', 'F', 'B'])
-const allRotations = ["", "x", "x'", "y", "y'", "z", "z'", "x2", "y2", "z2", ["y","x"],
+const allRotations = [[], ["x"], ["x'"], ["y"], ["y'"], ["z"], ["z'"], ["x2"], ["y2"], ["z2"], ["y","x"],
 	["y", "x'"], ["y", "x2"], ["y", "z"], ["y", "z'"], ["y'", "x"], [ "y'", "x'"], ["y'", "x2"], 
 	["y'", "z"], ["y'", "z'"], ["y2", "x"], ["y2", "x'"], ["y2", "z"], ["y2", "z'"]]
 
@@ -54,18 +54,16 @@ export default class Alg {
 	}
 
 	// Apply all possible rotations to a sequence of moves
+	// TODO: Consider returning one moves array to reduce operations
 	static getAllRotations(movesArr) {
-		const movesNormalizedAngle = this.normalizeAngle(movesArr)
-		
-		if (movesNormalizedAngle.length === 0) {
-			return movesNormalizedAngle
+		const normalizedMoves = this.normalizeAngle(movesArr)
+		if (!normalizedMoves.length) {
+			return [{ rotation: [], transformedMoves: [] }]
 		}
 
 		return allRotations.map(rotation => ({
 			rotation,
-			transformedMoves: Array.isArray(rotation) 
-				? rotation.reduce((acc, currentRotation) => this.rotateMoves(currentRotation, acc), movesNormalizedAngle)
-				: this.rotateMoves(rotation, movesNormalizedAngle)
+			transformedMoves: rotation.reduce((acc, currentRotation) => this.rotateMoves(currentRotation, acc), normalizedMoves)
 		}))
 	}
 
