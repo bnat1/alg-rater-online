@@ -79,8 +79,8 @@ export default class AlgRunner {
 
 		// all of the moves are rotations
 		// TODO: penalize score or not for final rotation here.
+		// at the moment, it's always penalized.
 		if (firstMoveIndex === -1) {
-			// at the moment, it's always penalized.
 			return { score, newHands: this.washHands(), executedMoves: [...moves], remainingMoves: [] }
 		}
 
@@ -100,12 +100,13 @@ export default class AlgRunner {
 			// remove execution options that cannot be done
 			.filter(execution => !execution.follows || previousMove && execution.follows.includes(previousMove.toUpperCase()))
 			.map(execution => {
+				// different total score for each execution.
+				let rotationAndExecutionScore = score
 				let { movePenalty, regripPenalty, newHands } = this.doMove(execution, hands, score, moves, firstMoveIndex)
-				score += movePenalty
-				score += regripPenalty
-				
+				rotationAndExecutionScore += movePenalty
+				rotationAndExecutionScore += regripPenalty
 				return {
-					score,
+					score: rotationAndExecutionScore,
 					newHands,
 					executedMoves: moves.slice(0, firstMoveIndex + 1), 
 					remainingMoves: moves.slice(firstMoveIndex + 1)
@@ -120,26 +121,40 @@ export default class AlgRunner {
 		}, []).join(' ')
 	}
 
-	static addCandidate(currentCandidate, candidates, maxCandidates) {
-		if (!candidates.length) {
-			candidates.push(currentCandidate)
-			return
-		}
+	// candidateVersions: { <id>: <score> }
+	static addCandidate(currentCandidate, maxCandidates, candidates, candidateVersions={}) {
 
+		// TODO Refactoring: can move Id be created during the algorithm to avoid a second pass over the alg?
 		currentCandidate.movesId = this.getCandidateAlgStr(currentCandidate)
+		let existingCandidateScore = candidateVersions[currentCandidate.movesId]
+		// expect candidate to exist in both candidateVersions and candidates or neither of the two.
 
-		// need to do pass over canndidates to find candidate with same move id.
-		// if a candidate exists and has a higher score, delete the old one, and insert this where this score would be inserted correctly.
-		// if a candidate has a lower score, forget this one.
-		// consider using a dictionary mappnig alg strings to scores to easily know.
-		// in the dictionary, the id can be deleted when it is kicked out of the array of top moves.
-
+		if (existingCandidateScore !== undefined) {
+			if (currentCandidate.score < existingCandidateScore) {
+				// TODO Refactoring: can indicies be looked up in O(1) somehow without often re-assigning all of the stored indicies?
+				// remove existing candidate from candidates array
+				const existingIndex = candidates.findIndex(candidate => candidate.movesId === currentCandidate.movesId)
+				candidates.splice(existingIndex, 1)
+			} else {
+				// if current candidate is worse than existing, no need to update it.
+				return
+			}
+		}
+		
+		// Insert/update into dictionary.
+		candidateVersions[currentCandidate.movesId] = currentCandidate.score
+		
+		// Insert into candidates.
 		let insertionIndex = candidates.findIndex(candidate => candidate.score > currentCandidate.score)
 		if (insertionIndex === -1) {
 			insertionIndex = candidates.length
 		}
 		candidates.splice(insertionIndex, 0, currentCandidate)
+
+		// remove worst candidate
 		if (candidates.length > maxCandidates) {
+			const { movesId: worstCandidateId } = candidates[candidates.length - 1]
+			delete candidateVersions[worstCandidateId]
 			candidates.pop()
 		}
 	}
@@ -150,12 +165,11 @@ export default class AlgRunner {
 	// }
 	// returns an array of algs with their scores
 	// TODO:
-	//  only save best grip option
 	//	special moves: small/slice turns
 	//	first move shouldn't count as regrip
 	//	optionally don't perform last rotation
 	// 	optionally don't count first rotation or last rotation
-	static run(moves, maxCandidates=10, currentCandidate={ execution: [], score: 0 }, candidates=[]) {
+	static run(moves, maxCandidates=10, currentCandidate={ execution: [], score: 0 }, candidates=[], candidateVersions={}) {
 		// depth control: prune branches that are already worse than the max allowed candidate
 		if (candidates.length === maxCandidates && currentCandidate.score > candidates[candidates.length - 1].score) {
 			return
@@ -163,7 +177,7 @@ export default class AlgRunner {
 
 		// base case: no more moves left to do
 		if (!moves.length) {
-			this.addCandidate(currentCandidate, candidates, maxCandidates)
+			this.addCandidate(currentCandidate, maxCandidates, candidates, candidateVersions)
 			return
 		}
 
@@ -171,7 +185,7 @@ export default class AlgRunner {
 		let allRotations = Alg.getAllRotations(moves)
 
 		// TODO: make the input of these for loops include all angles for all transformations (wide turns, slices).
-		// TODO: eveutually pre-compute all translations
+		// TODO: allow for choosing which rotations are allowed.
 		// get executions for first move
 		// angle: { rotation, transformedMoves }
 		for (let rotation of allRotations) {
@@ -196,7 +210,7 @@ export default class AlgRunner {
 					remainingMoves: execution.remainingMoves
 				})
 				// recurse
-				this.run(execution.remainingMoves, maxCandidates, newCandidate, candidates)
+				this.run(execution.remainingMoves, maxCandidates, newCandidate, candidates, candidateVersions)
 			}
 		}
 

@@ -11,7 +11,7 @@ module.exports = {
 			"penalty": 1,
 			"position": -1,
 			"hand": "right"
-		}
+		},
 	],
 	"R'": [
 		{
@@ -29,30 +29,30 @@ module.exports = {
 	],
 	"R2": [
 		{
+			"newPosition": 1,
+			"penalty": 1,
+			"position": -1,
+			"hand": "right"
+		},
+		{
 			"newPosition": -1,
 			"penalty": 1,
 			"description": "Invert double turn",
 			"position": 1,
 			"hand": "right"
-		},
-		{
-			"newPosition": 1,
-			"penalty": 1,
-			"position": -1,
-			"hand": "right"
 		}
 	],
 	"U": [
+		{
+			"penalty": 1,
+			"position": 0,
+			"hand": "right"
+		},
 		{
 			"penalty": 1.5,
 			"position": 0,
 			"hand": "left",
 			"description": "U push"
-		},
-		{
-			"penalty": 1,
-			"position": 0,
-			"hand": "right"
 		}
 	],
 	"U'": [

@@ -1,6 +1,7 @@
 import Alg from '../../classes/Alg'
 import AlgRunner from '../../classes/AlgRunner'
 import { assert } from 'chai'
+import { cloneDeep } from 'lodash'
 function isSortedByScore(candidates) {
 	let previousScore = candidates[0].score
 	for (let i = 1; i < candidates.length; i++) {
@@ -305,20 +306,176 @@ describe("Slice translations", () => {
 		
 	})
 })
-describe(`insertion of candidates`, () => {
+
+describe(`insertion / preservation of candidates`, () => {
+	// R U 
+	let basicCandidate = {
+		"execution": [
+			{
+				"moves": [
+					"R"
+				],
+				"hands": {
+					"left": undefined,
+					"right": 0
+				},
+				"score": 1,
+				"remainingMoves": [
+					"U"
+				]
+			},
+			{
+				"moves": [
+					"U"
+				],
+				"hands": {
+					"left": undefined,
+					"right": 0
+				},
+				"score": 1,
+				"remainingMoves": []
+			}
+		],
+		"score": 2,
+		"movesId": "R U",
+		"hands": {
+			"left": undefined,
+			"right": 0
+		}
+	}
+	let worseCandidate = {
+		"execution": [
+			{
+				"moves": [
+					"R"
+				],
+				"hands": {
+					"right": 1,
+					"left": undefined
+				},
+				"score": 1,
+				"remainingMoves": [
+					"U"
+				]
+			},
+			{
+				"moves": [
+					"U"
+				],
+				"hands": {
+					"left": 0,
+					"right": 1
+				},
+				"score": 1.5,
+				"remainingMoves": []
+			}
+		],
+		"score": 2.5,
+		"movesId": "R U",		
+		"hands": {
+			"left": 0,
+			"right": 1
+		}
+	}
+
+	let otherCandidate = {
+		"execution": [
+			{
+				"moves": [
+					"y2",
+					"L"
+				],
+				"hands": {
+					"right": undefined,
+					"left": 0
+				},
+				"score": 3,
+				"remainingMoves": [
+					"U"
+				]
+			},
+			{
+				"moves": [
+					"U"
+				],
+				"hands": {
+					"left": 0,
+					"right": 0
+				},
+				"score": 1,
+				"remainingMoves": []
+			}
+		],
+		"score": 4,
+		"movesId": "y2 L U",		
+		"hands": {
+			"left": 0,
+			"right": 0
+		}
+	}
 	// this would be more efficient as a heap, especailly if I want to allow many candidates.
 	it(`adds candidates in order when found`, () => {
+		// TODO: check id values and length
 		let candidates = []
-		AlgRunner.addCandidate({ score: 1, execution: [{ moves: ['R'] }] }, candidates, 3)
+		AlgRunner.addCandidate({ score: 1, execution: [{ moves: ['R'] }] }, 3, candidates)
 		isSortedByScore(candidates)
-		AlgRunner.addCandidate({ score: 0, execution: [{ moves: ['R'] }] }, candidates, 3)
+		AlgRunner.addCandidate({ score: 0, execution: [{ moves: ['R'] }] }, 3, candidates)
 		isSortedByScore(candidates)
-		AlgRunner.addCandidate({ score: 3, execution: [{ moves: ['R'] }] }, candidates, 3)
+		AlgRunner.addCandidate({ score: 3, execution: [{ moves: ['R'] }] }, 3,  candidates)
 		isSortedByScore(candidates)
-		AlgRunner.addCandidate({score: 2, execution: [{ moves: ['R'] }]}, candidates, 3)
+		AlgRunner.addCandidate({score: 2, execution: [{ moves: ['R'] }]}, 3,  candidates)
 		isSortedByScore(candidates)		
-		AlgRunner.addCandidate({score: 4, execution: [{ moves: ['R'] }]}, candidates, 3)
+		AlgRunner.addCandidate({score: 4, execution: [{ moves: ['R'] }]}, 3, candidates)
 		isSortedByScore(candidates)
+	})
+
+	it(`does not add a candidate if a candidate exists with the same moves with a better score`, () => {
+		let candidates = [basicCandidate]
+		let candidateVersions = { "R U": 2 }
+		let initialCandidatesClone = cloneDeep(candidates)
+		let initialCandidateVersionsClone = cloneDeep(candidateVersions)
+		AlgRunner.addCandidate(worseCandidate, 3, candidates, candidateVersions)
+		
+		// candidates is unchanged
+		assert.deepEqual(candidates, initialCandidatesClone)
+		// candidateVersions is unchanged
+		assert.deepEqual(candidateVersions, initialCandidateVersionsClone)
+	})
+
+	it(`removes an old candidate and inserts a new one it if there is a candidate with a better score`, () => {
+		let candidates = [worseCandidate]
+		let candidateVersions = { "R U": 2.5 }
+		let initialCandidatesClone = cloneDeep(candidates)
+		let initialCandidateVersionsClone = cloneDeep(candidateVersions)
+		AlgRunner.addCandidate(basicCandidate, 3, candidates, candidateVersions)
+		
+		// total number of candidates with the test ID is 1
+		assert.equal(candidates.length, 1)
+		// updates value of candidateVersions
+		assert.deepEqual(candidateVersions, { "R U": 2 })
+		assert.equal(candidates[0].movesId, "R U")
+		assert.equal(candidates[0].score, 2)
+	})
+
+	it(`removes the worst candidate if number of candidates exceeds max allowed candidates`, () => {
+		let candidates = []
+		let candidateVersions = {}
+		AlgRunner.addCandidate(otherCandidate, 1, candidates, candidateVersions)
+		AlgRunner.addCandidate(worseCandidate, 1, candidates, candidateVersions)
+		AlgRunner.addCandidate(basicCandidate, 1, candidates, candidateVersions)
+
+
+		// worst candidate doesn't exist in array
+		assert.equal(candidates[0].movesId, "R U")
+
+		// worst candidate doesn't exist in candidate versions
+		assert.isUndefined(candidateVersions["y2 L U"])
+
+		// length of array is max candidates
+		assert.equal(candidates.length, 1)
+		
+		// number of keys in candidate versions is max candidates
+		assert.equal(Object.keys(candidateVersions).length, 1)
 	})
 })
 
@@ -354,7 +511,8 @@ describe(`does move and applies penalties`, () => {
 		const execution = {
 			penalty: 1,
 			hand: "right",
-			position: 1
+			position: -1,
+			newPosition: 0
 		}
 		let hands = {}
 		let score = 0
@@ -363,13 +521,14 @@ describe(`does move and applies penalties`, () => {
 		const { movePenalty, regripPenalty, newHands } = AlgRunner.doMove(execution, hands, score, moves, firstMoveIndex)
 		assert.equal(movePenalty, 1)
 		assert.equal(regripPenalty, 0)
-		assert.deepEqual(newHands, { right: 1 })
+		assert.deepEqual(newHands, { right: 0 })
 	})
 	it (`applies a regrip penalty when hands are defined`, () => {
 		const execution = {
 			penalty: 1,
 			hand: "right",
-			position: 1
+			position: -1,
+			newPosition: 0
 		}
 		let hands = { right: 0 }
 		let score = 0
@@ -378,23 +537,43 @@ describe(`does move and applies penalties`, () => {
 		const { regripPenalty, movePenalty, newHands } = AlgRunner.doMove(execution, hands, score, moves, firstMoveIndex)
 		assert.equal(regripPenalty, 1)
 		assert.equal(movePenalty, 1)
-		assert.deepEqual(newHands, { right: 1 })
+		assert.deepEqual(newHands, { right: 0 })
+	})
+})
+
+describe(`getting executions for one move (and possibly rotations before it)`, () => {
+	it(`gets single move executions for a single move with no rotation`, () => {
+		let hands = { left: undefined, right: undefined }
+		let moves = ['R']
+		let executions = AlgRunner.getSingleMoveExecutions(moves, hands)
+		assert.equal(executions.length, 2)
+		assert.deepEqual(executions[0].newHands, { left: undefined, right: 1 })
+		assert.equal(executions[0].score, 1)
+		assert.deepEqual(executions[1].newHands, { left: undefined, right: 0 })
+		assert.equal(executions[1].score, 1)
+	})
+	//TODO
+	it(`eliminates executions that don't fit the 'follows' preticate`, () => {
 	})
 })
 
 describe(`Candidate finding algorithm`, () => {
 	const testBasicAlg = new Alg("R U")
 	const candidates = AlgRunner.run(testBasicAlg.movesArr, 10)
-	// console.error("result:", JSON.stringify(candidates, null, '\t'))
+	console.error("result:", JSON.stringify(candidates, null, '\t'))
 	
-	it (`returns the correct number of candiates`, () => {
+	it (`returns the correct number of candiates, and all have unique moves`, () => {
+		let uniqueCandidates = new Set()
 		assert.equal(candidates.length, 10)
+		candidates.forEach(candidate => uniqueCandidates.add(candidate.movesId))
+		assert.equal(uniqueCandidates.size, 10)
 	})
-	it(`sorts the candidates by score`, () => {
-		isSortedByScore(candidates)
+
+	it(`finds the best candidate in basic cases such as R U`, () => {
+		assert.equal(candidates[0].movesId, 'R U')
+		assert.equal(candidates[0].score, 2)
 	})
 })
 
 // TODO:
-// show only the best regrip
 // do special moves (slices, small moves)
